@@ -72,7 +72,7 @@ cs32-finalproject/
 
 ### Generative AI usage
 
-**I used Claude Code (Anthropic)** as a coding assistant throughout development. Specific contributions vs mine include:
+**I used Claude Code (Anthropic)** as a coding assistant/my "duck" throughout development. Specific contributions vs mine include:
 
 - I designed and implemented the core recommendation system architecture, including user profiling, scoring logic, and ranking pipeline in script.js. Claude assisted in refining parts of the mathematical formulation (e.g., recommenging the Gaussian soft-matching and cold-start blending), but the overall system design, feature selection, and weighting strategy were my own.
 - I developed the multi-query geospatial search strategy in app.py (/api/segments), including the idea of using offset bounding boxes and deduplication to improve coverage. Claude helped streamline parts of the implementation.

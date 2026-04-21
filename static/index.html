@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Routeswipe</title>
+  <link rel="stylesheet" href="/static/style.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- LOGIN SCREEN -->
+  <div id="login-screen" class="screen">
+    <div class="login-bg-shape"></div>
+    <div class="login-content">
+      <div class="login-logo">
+        <span>🏃</span>
+        <span class="logo-text">Routeswipe</span>
+      </div>
+      <p class="login-tagline">Swipe your way to the perfect run.</p>
+      <div class="login-card">
+        <p class="login-desc">Connect with Strava to discover and match with running routes near you.</p>
+        <a href="/login" class="strava-btn">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/c/cb/Strava_Logo.svg" class="strava-logo" alt="Strava" />
+          Connect with Strava
+        </a>
+        <p class="login-note">We never post on your behalf.</p>
+      </div>
+      <div class="login-features">
+        <div class="feature"><span>🗺️</span><p>Discover routes near you</p></div>
+        <div class="feature"><span>👍</span><p>Swipe to like or skip</p></div>
+        <div class="feature"><span>❤️</span><p>Save your favorites</p></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN APP -->
+  <div id="app-screen" class="screen hidden">
+    <header class="home-header">
+      <div class="header-logo"><span>🏃</span> Routeswipe</div>
+      <div class="header-right">
+        <img id="avatar" class="avatar" src="" alt="profile" />
+        <a href="/logout" class="logout-btn">Sign out</a>
+      </div>
+    </header>
+
+    <!-- DAILY PREFS PANEL -->
+    <div id="prefs-panel" class="prefs-panel hidden">
+      <div class="prefs-card">
+        <div class="prefs-emoji">🏃</div>
+        <h2 class="prefs-title">What's your run today?</h2>
+        <p class="prefs-subtitle">We'll find routes that match your mood.</p>
+
+        <div class="pref-group">
+          <div class="pref-label">Distance</div>
+          <div class="pref-chips" id="chips-distance">
+            <button class="pref-chip" onclick="selectPref('distance','short')">Short<span>&lt;3 km</span></button>
+            <button class="pref-chip" onclick="selectPref('distance','medium')">Medium<span>3–7 km</span></button>
+            <button class="pref-chip" onclick="selectPref('distance','long')">Long<span>7 km+</span></button>
+            <button class="pref-chip selected" onclick="selectPref('distance','any')">Any<span>no pref</span></button>
+          </div>
+        </div>
+
+        <div class="pref-group">
+          <div class="pref-label">Terrain</div>
+          <div class="pref-chips" id="chips-terrain">
+            <button class="pref-chip" onclick="selectPref('terrain','flat')">Flat<span>&lt;30m elev</span></button>
+            <button class="pref-chip" onclick="selectPref('terrain','rolling')">Rolling<span>30–100m</span></button>
+            <button class="pref-chip" onclick="selectPref('terrain','hilly')">Hilly<span>100m+</span></button>
+            <button class="pref-chip selected" onclick="selectPref('terrain','any')">Any<span>no pref</span></button>
+          </div>
+        </div>
+
+        <button class="find-routes-btn" onclick="startWithPrefs()">Find my routes →</button>
+      </div>
+    </div>
+
+    <nav id="tab-nav" class="tab-nav hidden">
+      <button class="tab active" onclick="switchTab('swipe', event)">Discover</button>
+      <button class="tab" onclick="switchTab('saved', event)">Saved (<span id="saved-count">0</span>)</button>
+    </nav>
+
+    <!-- SWIPE TAB -->
+    <main id="swipe-tab" class="swipe-area">
+      <div id="state-loading" class="state-msg">
+        <div class="spinner"></div>
+        <p>Finding routes near you…</p>
+      </div>
+      <div id="state-error" class="state-msg hidden">
+        <p id="error-text">Something went wrong.</p>
+        <button class="retry-btn" onclick="loadRoutes()">Try again</button>
+      </div>
+      <div id="state-empty" class="state-msg hidden">
+        <p style="font-size:2.5rem">🎉</p>
+        <p>You've seen all routes!</p>
+        <button class="retry-btn" onclick="loadRoutes()">Refresh</button>
+      </div>
+      <div id="card-stack" class="card-stack hidden"></div>
+      <p id="routes-remaining" class="routes-remaining hidden"></p>
+      <div id="feedback-overlay" class="feedback-overlay hidden"></div>
+    </main>
+
+    <!-- SAVED TAB -->
+    <main id="saved-tab" class="saved-area hidden">
+      <div id="saved-empty" class="state-msg">
+        <p style="font-size:2.5rem">💨</p>
+        <p>No saved routes yet. Start swiping!</p>
+      </div>
+      <div id="saved-list" class="saved-list"></div>
+    </main>
+  </div>
+
+  <!-- ROUTE DETAIL MODAL -->
+  <div id="route-modal" class="route-modal hidden" onclick="handleModalBackdrop(event)">
+    <div class="route-modal-card">
+      <div class="route-modal-map-wrap">
+        <div id="modal-map" class="route-modal-map"></div>
+        <div id="modal-badge" class="route-modal-badge"></div>
+      </div>
+      <div class="route-modal-body">
+        <h2 class="route-modal-name" id="modal-name"></h2>
+        <div class="card-stats route-modal-stats">
+          <div class="stat">
+            <span class="stat-label">Distance</span>
+            <span class="stat-value" id="modal-dist"></span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Elevation</span>
+            <span class="stat-value" id="modal-elev"></span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Runners</span>
+            <span class="stat-value" id="modal-runners"></span>
+          </div>
+        </div>
+        <div class="route-modal-actions">
+          <button class="modal-close-btn" onclick="closeRouteModal()">← Back</button>
+          <button class="modal-remove-btn" id="modal-remove">Remove saved</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="/static/script.js"></script>
+</body>
+</html>

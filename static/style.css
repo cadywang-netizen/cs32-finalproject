@@ -1,0 +1,290 @@
+:root {
+  --coral: #FF5A3C;
+  --coral-dark: #e04528;
+  --bg: #f7f4f0;
+  --card-bg: #ffffff;
+  --text: #1a1a1a;
+  --muted: #999;
+  --red: #e74c3c;
+  --green: #2ecc71;
+  --radius: 24px;
+  --shadow: 0 12px 50px rgba(0,0,0,0.13);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); }
+
+.screen { height: 100vh; display: flex; flex-direction: column; }
+.hidden { display: none !important; }
+
+/* ── Login ── */
+.login-screen { position: relative; align-items: center; justify-content: center; overflow: hidden; }
+#login-screen { position: relative; align-items: center; justify-content: center; overflow: hidden; }
+
+.login-bg-shape {
+  position: absolute; top: -200px; right: -200px;
+  width: 600px; height: 600px;
+  background: var(--coral); border-radius: 50%; opacity: 0.1;
+}
+
+.login-content {
+  position: relative; z-index: 1;
+  display: flex; flex-direction: column; align-items: center;
+  gap: 1.5rem; width: 100%; max-width: 420px; padding: 2rem;
+}
+
+.login-logo { display: flex; align-items: center; gap: 0.5rem; }
+.login-logo span:first-child { font-size: 2.5rem; }
+.logo-text { font-family: 'Bebas Neue', sans-serif; font-size: 3.5rem; color: var(--coral); letter-spacing: 2px; }
+
+.login-tagline { color: var(--muted); font-size: 1.05rem; margin-top: -0.5rem; }
+
+.login-card {
+  background: white; border-radius: var(--radius);
+  padding: 2rem; width: 100%; box-shadow: var(--shadow);
+  display: flex; flex-direction: column; align-items: center; gap: 1.25rem;
+}
+
+.login-desc { color: var(--muted); font-size: 0.92rem; text-align: center; line-height: 1.6; }
+
+.strava-btn {
+  display: flex; align-items: center; gap: 0.75rem;
+  background: var(--coral); color: white; text-decoration: none;
+  border-radius: 12px; padding: 0.9rem 1.75rem;
+  font-size: 1rem; font-weight: 600; width: 100%; justify-content: center;
+  transition: background 0.2s, transform 0.1s;
+}
+.strava-btn:hover { background: var(--coral-dark); transform: translateY(-1px); }
+.strava-logo { height: 20px; filter: brightness(0) invert(1); }
+.login-note { font-size: 0.78rem; color: var(--muted); text-align: center; }
+
+.login-features { display: flex; gap: 1rem; width: 100%; }
+.feature {
+  flex: 1; background: white; border-radius: 14px;
+  padding: 1rem 0.5rem; display: flex; flex-direction: column;
+  align-items: center; gap: 0.4rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+.feature span { font-size: 1.4rem; }
+.feature p { font-size: 0.78rem; color: var(--muted); text-align: center; line-height: 1.4; }
+
+/* ── App Header ── */
+.home-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.9rem 1.5rem; background: white;
+  box-shadow: 0 1px 0 rgba(0,0,0,0.06); flex-shrink: 0;
+}
+.header-logo {
+  font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem;
+  color: var(--coral); letter-spacing: 2px;
+  display: flex; align-items: center; gap: 0.4rem;
+}
+.header-right { display: flex; align-items: center; gap: 0.75rem; }
+.avatar { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; border: 2.5px solid var(--coral); }
+.logout-btn {
+  background: none; border: 1.5px solid #e0d8d0; border-radius: 8px;
+  padding: 0.35rem 0.8rem; font-size: 0.82rem; color: var(--muted);
+  text-decoration: none; transition: border-color 0.15s, color 0.15s;
+}
+.logout-btn:hover { border-color: var(--coral); color: var(--coral); }
+
+/* ── Tabs ── */
+.tab-nav { display: flex; background: white; border-bottom: 1px solid #ede8e2; flex-shrink: 0; }
+.tab {
+  flex: 1; padding: 0.8rem; font-size: 0.88rem; font-weight: 500;
+  background: none; border: none; color: var(--muted);
+  border-bottom: 2.5px solid transparent; cursor: pointer;
+  transition: color 0.15s, border-color 0.15s; font-family: 'DM Sans', sans-serif;
+}
+.tab.active { color: var(--coral); border-bottom-color: var(--coral); }
+
+/* ── Swipe area ── */
+.swipe-area {
+  flex: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 1.5rem 1rem 1rem; position: relative; overflow: hidden;
+}
+
+.card-stack { position: relative; width: 100%; max-width: 420px; height: 530px; }
+
+.routes-remaining { margin-top: 1.25rem; font-size: 0.78rem; color: var(--muted); }
+
+/* ── Card ── */
+.swipe-card {
+  position: absolute; width: 100%; background: var(--card-bg);
+  border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden;
+}
+.swipe-card:nth-child(1) { z-index: 3; transform: translateY(0) scale(1); }
+.swipe-card:nth-child(2) { z-index: 2; transform: translateY(12px) scale(0.97); }
+.swipe-card:nth-child(3) { z-index: 1; transform: translateY(24px) scale(0.94); }
+
+.card-map { height: 260px; position: relative; background: #e8e4de; }
+.card-map .leaflet-container { height: 100%; width: 100%; }
+
+.card-badge {
+  position: absolute; top: 12px; right: 12px; z-index: 999;
+  color: white; font-size: 0.68rem; font-weight: 700;
+  padding: 5px 12px; border-radius: 20px;
+  text-transform: uppercase; letter-spacing: 1px;
+}
+
+.card-info { padding: 1.2rem 1.5rem 0.5rem; }
+
+.card-name {
+  font-family: 'Bebas Neue', sans-serif; font-size: 1.8rem;
+  letter-spacing: 1.5px; margin-bottom: 0.85rem;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.card-stats { display: flex; }
+.stat { flex: 1; display: flex; flex-direction: column; gap: 3px; padding-right: 1rem; border-right: 1px solid #f0ebe5; }
+.stat:last-child { border-right: none; padding-right: 0; padding-left: 1rem; }
+.stat:not(:first-child):not(:last-child) { padding-left: 1rem; }
+.stat-label { font-size: 0.65rem; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); font-weight: 600; }
+.stat-value { font-size: 1.05rem; font-weight: 600; }
+
+.card-actions { display: flex; justify-content: center; gap: 2.5rem; padding: 1rem 1.5rem 1.5rem; }
+
+.btn-skip, .btn-like {
+  width: 64px; height: 64px; border-radius: 50%; border: none;
+  font-size: 1.4rem; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
+}
+.btn-skip { background: white; color: var(--red); border: 2px solid #fde8e8; box-shadow: 0 4px 16px rgba(231,76,60,0.1); }
+.btn-skip:hover { transform: scale(1.12); box-shadow: 0 6px 22px rgba(231,76,60,0.22); }
+.btn-like { background: var(--coral); color: white; box-shadow: 0 4px 16px rgba(255,90,60,0.3); }
+.btn-like:hover { transform: scale(1.12); box-shadow: 0 6px 22px rgba(255,90,60,0.45); }
+
+/* ── States ── */
+.state-msg { display: flex; flex-direction: column; align-items: center; gap: 1rem; color: var(--muted); text-align: center; }
+.spinner { width: 36px; height: 36px; border: 3px solid #ede8e2; border-top-color: var(--coral); border-radius: 50%; animation: spin 0.75s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.retry-btn { background: var(--coral); color: white; border: none; border-radius: 10px; padding: 0.6rem 1.5rem; font-size: 0.9rem; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+
+/* ── Feedback ── */
+.feedback-overlay { position: fixed; top: 50%; left: 50%; font-size: 5rem; z-index: 9999; pointer-events: none; animation: pop 0.6s ease forwards; }
+@keyframes pop {
+  0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.4); }
+  40%  { opacity: 1; transform: translate(-50%, -50%) scale(1.3); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(1.0); }
+}
+
+/* ── Daily Prefs Panel ── */
+.prefs-panel {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  padding: 1.5rem;
+}
+
+.prefs-card {
+  background: white; border-radius: var(--radius); box-shadow: var(--shadow);
+  padding: 2rem 1.75rem; width: 100%; max-width: 420px;
+  display: flex; flex-direction: column; align-items: center; gap: 1.5rem;
+}
+
+.prefs-emoji { font-size: 2.5rem; }
+.prefs-title { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: 1px; }
+.prefs-subtitle { color: var(--muted); font-size: 0.88rem; margin-top: -0.75rem; text-align: center; }
+
+.pref-group { width: 100%; display: flex; flex-direction: column; gap: 0.5rem; }
+.pref-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--muted); }
+
+.pref-chips { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; }
+.pref-chip {
+  background: var(--bg); border: 2px solid transparent; border-radius: 12px;
+  padding: 0.6rem 0.25rem; cursor: pointer; font-family: 'DM Sans', sans-serif;
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+  font-size: 0.85rem; font-weight: 600; color: var(--text);
+  transition: border-color 0.15s, background 0.15s, color 0.15s;
+}
+.pref-chip span { font-size: 0.65rem; font-weight: 400; color: var(--muted); }
+.pref-chip.selected { background: #fff0ee; border-color: var(--coral); color: var(--coral); }
+.pref-chip.selected span { color: var(--coral-dark); }
+
+.find-routes-btn {
+  width: 100%; background: var(--coral); color: white; border: none;
+  border-radius: 12px; padding: 0.95rem; font-size: 1rem; font-weight: 600;
+  cursor: pointer; font-family: 'DM Sans', sans-serif;
+  transition: background 0.2s, transform 0.1s;
+}
+.find-routes-btn:hover { background: var(--coral-dark); transform: translateY(-1px); }
+
+/* ── Saved tab ── */
+.saved-area { flex: 1; padding: 1.25rem; overflow-y: auto; }
+.saved-list { display: flex; flex-direction: column; gap: 0.75rem; max-width: 480px; margin: 0 auto; }
+.saved-item {
+  display: flex; align-items: center; justify-content: space-between;
+  background: white; border-radius: 16px; padding: 1rem 1.25rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.05);
+}
+.saved-info { display: flex; flex-direction: column; gap: 4px; }
+.saved-name { font-weight: 600; font-size: 0.95rem; }
+.saved-meta { font-size: 0.8rem; color: var(--muted); }
+.saved-item { cursor: pointer; }
+.saved-item:hover { box-shadow: 0 4px 18px rgba(0,0,0,0.10); }
+
+.unlike-btn {
+  background: #fff0ee; border: none; color: var(--red);
+  width: 32px; height: 32px; border-radius: 50%; font-size: 0.85rem;
+  cursor: pointer; flex-shrink: 0;
+}
+
+/* ── Route detail modal ── */
+.route-modal {
+  position: fixed; inset: 0; z-index: 10000;
+  background: rgba(0,0,0,0.55);
+  display: flex; align-items: flex-end; justify-content: center;
+  padding: 0;
+}
+.route-modal.hidden { display: none !important; }
+
+.route-modal-card {
+  background: white; border-radius: var(--radius) var(--radius) 0 0;
+  width: 100%; max-width: 520px;
+  max-height: 92vh; display: flex; flex-direction: column;
+  overflow: hidden; animation: slideUp 0.22s ease;
+}
+@keyframes slideUp {
+  from { transform: translateY(40px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+.route-modal-map-wrap { position: relative; height: 300px; flex-shrink: 0; }
+.route-modal-map,
+.route-modal-map .leaflet-container { height: 100%; width: 100%; }
+
+.route-modal-badge {
+  position: absolute; top: 12px; right: 12px; z-index: 1000;
+  color: white; font-size: 0.68rem; font-weight: 700;
+  padding: 5px 12px; border-radius: 20px;
+  text-transform: uppercase; letter-spacing: 1px;
+}
+
+.route-modal-body {
+  padding: 1.5rem; overflow-y: auto;
+  display: flex; flex-direction: column; gap: 1.25rem;
+}
+
+.route-modal-name {
+  font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: 1.5px;
+}
+
+.route-modal-stats { border-top: 1px solid #f0ebe5; padding-top: 1rem; }
+
+.route-modal-actions { display: flex; gap: 0.75rem; }
+
+.modal-close-btn {
+  flex: 1; background: var(--bg); border: none; border-radius: 12px;
+  padding: 0.85rem; font-size: 0.9rem; font-weight: 600; color: var(--text);
+  cursor: pointer; font-family: 'DM Sans', sans-serif;
+  transition: background 0.15s;
+}
+.modal-close-btn:hover { background: #ede8e2; }
+
+.modal-remove-btn {
+  flex: 1; background: #fff0ee; border: none; border-radius: 12px;
+  padding: 0.85rem; font-size: 0.9rem; font-weight: 600; color: var(--red);
+  cursor: pointer; font-family: 'DM Sans', sans-serif;
+  transition: background 0.15s;
+}
+.modal-remove-btn:hover { background: #fde0dc; }

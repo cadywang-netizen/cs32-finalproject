@@ -40,7 +40,7 @@ def login():
     return redirect(url)
 
 
-# ── Auth: handle Strava callback ────────────────────────────────
+# #handle Strava callback
 @app.route("/callback")
 def callback():
     code = request.args.get("code")

@@ -4,7 +4,7 @@ A Tinder-style web app for discovering running routes. Connect your Strava accou
 
 ## Features
 
-- **Strava OAuth login** — authenticates via Strava and reads your public profile
+- **Strava OAuth login** - authenticates via Strava and reads your public profile
 - **Daily preference picker** — choose a distance range (short / medium / long) and terrain type (flat / rolling / hilly) before each session
 - **Swipe-to-discover** — browse Strava segments near your current GPS location presented as cards with an embedded map, distance, elevation gain, and runner count
 - **Smart ranking** — routes are scored using a blend of Strava popularity signals and a Gaussian preference model built from your liked routes (distance, elevation, and geographic centroid)
@@ -74,8 +74,8 @@ cs32-finalproject/
 
 **I used Claude Code (Anthropic)** as a coding assistant throughout development. Specific contributions include:
 
-- The ranking/recommendation algorithm in `script.js` (`buildProfile`, `scoreRoute`, `rankRoutes`, `dailyPrefScore`, `popularityScore`) — the Gaussian soft-match approach and cold-start blending logic were developed with Claude's help
-- The multi-tile-offset bounding-box strategy in `app.py`'s `/api/segments` endpoint (the `offsets` list and deduplication loop) to increase segment coverage around a location
-- The polyline decoder (`decodePolyline` in `script.js`) — adapted from the standard Google encoded polyline algorithm
+- I designed and implemented the core recommendation system architecture, including user profiling, scoring logic, and ranking pipeline in script.js. Claude assisted in refining parts of the mathematical formulation (e.g., Gaussian soft-matching and cold-start blending), but the overall system design, feature selection, and weighting strategy were my own.
+- I developed the multi-query geospatial search strategy in app.py (/api/segments), including the idea of using offset bounding boxes and deduplication to improve coverage. Claude helped streamline parts of the implementation.
+- I integrated and adapted the polyline decoding logic in script.js based on standard algorithms that I found when Googling, with Claude assisting in the translation and cleanup.
 
 The overall product concept, UI design, Strava OAuth integration structure, and swipe interaction model were written by the project author.

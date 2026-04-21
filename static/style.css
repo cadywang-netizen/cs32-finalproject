@@ -18,7 +18,7 @@ html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(-
 .screen { height: 100vh; display: flex; flex-direction: column; }
 .hidden { display: none !important; }
 
-/* ── Login ── */
+/* Login */
 .login-screen { position: relative; align-items: center; justify-content: center; overflow: hidden; }
 #login-screen { position: relative; align-items: center; justify-content: center; overflow: hidden; }
 
@@ -69,7 +69,7 @@ html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(-
 .feature span { font-size: 1.4rem; }
 .feature p { font-size: 0.78rem; color: var(--muted); text-align: center; line-height: 1.4; }
 
-/* ── App Header ── */
+/* App Header */
 .home-header {
   display: flex; align-items: center; justify-content: space-between;
   padding: 0.9rem 1.5rem; background: white;
@@ -89,7 +89,7 @@ html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(-
 }
 .logout-btn:hover { border-color: var(--coral); color: var(--coral); }
 
-/* ── Tabs ── */
+/* Tabs */
 .tab-nav { display: flex; background: white; border-bottom: 1px solid #ede8e2; flex-shrink: 0; }
 .tab {
   flex: 1; padding: 0.8rem; font-size: 0.88rem; font-weight: 500;
@@ -99,7 +99,7 @@ html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(-
 }
 .tab.active { color: var(--coral); border-bottom-color: var(--coral); }
 
-/* ── Swipe area ── */
+/* Swipe area */
 .swipe-area {
   flex: 1; display: flex; flex-direction: column;
   align-items: center; justify-content: center;
@@ -110,7 +110,7 @@ html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(-
 
 .routes-remaining { margin-top: 1.25rem; font-size: 0.78rem; color: var(--muted); }
 
-/* ── Card ── */
+/* Cards */
 .swipe-card {
   position: absolute; width: 100%; background: var(--card-bg);
   border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden;
@@ -156,13 +156,13 @@ html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(-
 .btn-like { background: var(--coral); color: white; box-shadow: 0 4px 16px rgba(255,90,60,0.3); }
 .btn-like:hover { transform: scale(1.12); box-shadow: 0 6px 22px rgba(255,90,60,0.45); }
 
-/* ── States ── */
+/* States */
 .state-msg { display: flex; flex-direction: column; align-items: center; gap: 1rem; color: var(--muted); text-align: center; }
 .spinner { width: 36px; height: 36px; border: 3px solid #ede8e2; border-top-color: var(--coral); border-radius: 50%; animation: spin 0.75s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 .retry-btn { background: var(--coral); color: white; border: none; border-radius: 10px; padding: 0.6rem 1.5rem; font-size: 0.9rem; font-weight: 500; cursor: pointer; font-family: 'DM Sans', sans-serif; }
 
-/* ── Feedback ── */
+/* Feedabck */
 .feedback-overlay { position: fixed; top: 50%; left: 50%; font-size: 5rem; z-index: 9999; pointer-events: none; animation: pop 0.6s ease forwards; }
 @keyframes pop {
   0%   { opacity: 0; transform: translate(-50%, -50%) scale(0.4); }
@@ -170,7 +170,7 @@ html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(-
   100% { opacity: 0; transform: translate(-50%, -50%) scale(1.0); }
 }
 
-/* ── Daily Prefs Panel ── */
+/* Daily Prefs Panel */
 .prefs-panel {
   flex: 1; display: flex; align-items: center; justify-content: center;
   padding: 1.5rem;
@@ -209,7 +209,7 @@ html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(-
 }
 .find-routes-btn:hover { background: var(--coral-dark); transform: translateY(-1px); }
 
-/* ── Saved tab ── */
+/* Saved tab */
 .saved-area { flex: 1; padding: 1.25rem; overflow-y: auto; }
 .saved-list { display: flex; flex-direction: column; gap: 0.75rem; max-width: 480px; margin: 0 auto; }
 .saved-item {
@@ -229,7 +229,7 @@ html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(-
   cursor: pointer; flex-shrink: 0;
 }
 
-/* ── Route detail modal ── */
+/* Route detail modal */
 .route-modal {
   position: fixed; inset: 0; z-index: 10000;
   background: rgba(0,0,0,0.55);

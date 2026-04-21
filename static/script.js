@@ -1,4 +1,4 @@
-// ── State ────────────────────────────────────────────────────────
+// State
 let routes = [];
 let liked = JSON.parse(localStorage.getItem("liked_routes") || "[]");
 let skippedIds = new Set(JSON.parse(localStorage.getItem("skipped_ids") || "[]"));
@@ -6,7 +6,7 @@ let searchRadius = 1;
 let maps = {};
 let dailyPrefs = { distance: "any", terrain: "any" };
 
-// ── Boot ─────────────────────────────────────────────────────────
+// Boot
 async function boot() {
   const res = await fetch("/api/me");
   if (res.status === 401) {
@@ -28,7 +28,7 @@ function show(id) {
   document.getElementById(id).classList.remove("hidden");
 }
 
-// ── Daily prefs ───────────────────────────────────────────────────
+// Daily prefs
 function selectPref(group, value) {
   dailyPrefs[group] = value;
   document.querySelectorAll(`#chips-${group} .pref-chip`).forEach(btn => {
@@ -42,7 +42,7 @@ function startWithPrefs() {
   loadRoutes();
 }
 
-// ── Routing ───────────────────────────────────────────────────────
+// Routing
 function switchTab(tab, event) {
   document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
   event.target.classList.add("active");
@@ -50,7 +50,7 @@ function switchTab(tab, event) {
   document.getElementById("saved-tab").classList.toggle("hidden", tab !== "saved");
 }
 
-// ── Load routes from Flask ────────────────────────────────────────
+// Load routes from Flask
 async function loadRoutes() {
   setState("loading");
   try {
@@ -95,7 +95,7 @@ function getLocation() {
   return new Promise((res, rej) => navigator.geolocation.getCurrentPosition(res, rej));
 }
 
-// ── Ranking / preference engine ───────────────────────────────────
+// Ranking / preference engine
 function buildProfile() {
   if (!liked.length) return null;
 
@@ -196,7 +196,7 @@ function rankRoutes(list) {
   return [...list].sort((a, b) => scoreRoute(b, profile) - scoreRoute(a, profile));
 }
 
-// ── State display ─────────────────────────────────────────────────
+// State display
 function setState(state, msg) {
   document.getElementById("state-loading").classList.add("hidden");
   document.getElementById("state-error").classList.add("hidden");
@@ -216,7 +216,7 @@ function setState(state, msg) {
   }
 }
 
-// ── Card rendering ────────────────────────────────────────────────
+// Card rendering
 function renderCards() {
   const stack = document.getElementById("card-stack");
   stack.innerHTML = "";
@@ -298,7 +298,7 @@ function initMap(route, index) {
   maps[index] = map;
 }
 
-// ── Swipe actions ─────────────────────────────────────────────────
+// "Swipe" actions
 function handleLike() {
   if (!routes.length) return;
   showFeedback("❤️");
@@ -338,7 +338,7 @@ function showFeedback(emoji) {
   setTimeout(() => el.classList.add("hidden"), 650);
 }
 
-// ── Saved tab ─────────────────────────────────────────────────────
+// Saved tab
 function renderSaved() {
   document.getElementById("saved-count").textContent = liked.length;
   const list = document.getElementById("saved-list");
@@ -368,7 +368,7 @@ function removeSaved(id) {
   renderSaved();
 }
 
-// ── Route detail modal ────────────────────────────────────────────
+// Route detail modal
 let modalMap = null;
 
 function openRouteModal(id) {
@@ -428,7 +428,7 @@ function handleModalBackdrop(e) {
   if (e.target === document.getElementById("route-modal")) closeRouteModal();
 }
 
-// ── Helpers ───────────────────────────────────────────────────────
+// Helpers
 function formatDist(m) {
   return m >= 1000 ? `${(m / 1000).toFixed(1)} km` : `${Math.round(m)} m`;
 }
@@ -454,5 +454,5 @@ function decodePolyline(encoded) {
   return coords;
 }
 
-// ── Go! ───────────────────────────────────────────────────────────
+// hehe Go!
 boot();

@@ -124,6 +124,35 @@ def segments():
     return jsonify(all_segments)
 
 
+#api: fetch user's recent runs for warm-start profiling
+@app.route("/api/my-activities")
+def my_activities():
+    if "token" not in session:
+        return jsonify({"error": "not_logged_in"}), 401
+
+    res = requests.get(f"{STRAVA_BASE}/athlete/activities",
+        params={"per_page": 20},
+        headers={"Authorization": f"Bearer {session['token']}"})
+
+    if not res.ok:
+        return jsonify([])
+
+    runs = []
+    for a in res.json():
+        if a.get("type") == "Run" or a.get("sport_type") == "Run":
+            runs.append({
+                "id": a["id"],
+                "name": a.get("name", ""),
+                "distance": a.get("distance", 0),
+                "total_elevation_gain": a.get("total_elevation_gain", 0),
+                "start_latlng": a.get("start_latlng", []),
+            })
+            if len(runs) >= 10:
+                break
+
+    return jsonify(runs)
+
+
 #api: get segment info
 @app.route("/api/segments/<int:segment_id>")
 def segment_detail(segment_id):

@@ -99,6 +99,14 @@ html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(-
 }
 .tab.active { color: var(--coral); border-bottom-color: var(--coral); }
 
+/* Goal banner */
+.goal-banner {
+  display: flex; align-items: center; gap: 0.5rem;
+  background: #fff0ee; border: 1.5px solid var(--coral); border-radius: 10px;
+  padding: 0.45rem 1rem; font-size: 0.8rem; color: var(--coral); font-weight: 500;
+  max-width: 420px; width: 100%; margin-bottom: 0.25rem;
+}
+
 /* Swipe area */
 .swipe-area {
   flex: 1; display: flex; flex-direction: column;
@@ -190,6 +198,7 @@ html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(-
 .pref-label { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1.2px; color: var(--muted); }
 
 .pref-chips { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; }
+.pref-chips.five-col { grid-template-columns: repeat(5, 1fr); }
 .pref-chip {
   background: var(--bg); border: 2px solid transparent; border-radius: 12px;
   padding: 0.6rem 0.25rem; cursor: pointer; font-family: 'DM Sans', sans-serif;

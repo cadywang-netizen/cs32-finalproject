@@ -2,9 +2,18 @@
 let routes = [];
 let liked = JSON.parse(localStorage.getItem("liked_routes") || "[]");
 let skippedIds = new Set(JSON.parse(localStorage.getItem("skipped_ids") || "[]"));
+let pastActivities = JSON.parse(localStorage.getItem("past_activities") || "[]");
+let trainingGoal = localStorage.getItem("training_goal") || "none";
 let searchRadius = 1;
 let maps = {};
 let dailyPrefs = { distance: "any", terrain: "any" };
+
+const GOAL_CONFIG = {
+  "5k":            { peakDist: 8000,  label: "5K Race" },
+  "10k":           { peakDist: 14000, label: "10K Race" },
+  "half-marathon": { peakDist: 22000, label: "Half Marathon" },
+  "marathon":      { peakDist: 32000, label: "Full Marathon" },
+};
 
 // Boot
 async function boot() {
@@ -19,7 +28,22 @@ async function boot() {
   if (athlete.profile_medium) avatar.src = athlete.profile_medium;
   else avatar.style.display = "none";
   renderSaved();
+  restoreGoalUI();
   document.getElementById("prefs-panel").classList.remove("hidden");
+  // Fetch recent Strava runs in the background to warm the recommender
+  loadPastActivities();
+}
+
+async function loadPastActivities() {
+  try {
+    const res = await fetch("/api/my-activities");
+    if (res.ok) {
+      pastActivities = await res.json();
+      localStorage.setItem("past_activities", JSON.stringify(pastActivities));
+    }
+  } catch (e) {
+    // silently fall back to cached data already in pastActivities
+  }
 }
 
 function show(id) {
@@ -39,7 +63,31 @@ function selectPref(group, value) {
 function startWithPrefs() {
   document.getElementById("prefs-panel").classList.add("hidden");
   document.getElementById("tab-nav").classList.remove("hidden");
+  renderGoalBanner();
   loadRoutes();
+}
+
+// Training goal selection (persists across sessions)
+function selectGoal(value) {
+  trainingGoal = value;
+  localStorage.setItem("training_goal", value);
+  document.querySelectorAll("#chips-goal .pref-chip").forEach(btn => {
+    btn.classList.toggle("selected", btn.dataset.goal === value);
+  });
+}
+
+function restoreGoalUI() {
+  document.querySelectorAll("#chips-goal .pref-chip").forEach(btn => {
+    btn.classList.toggle("selected", btn.dataset.goal === trainingGoal);
+  });
+}
+
+function renderGoalBanner() {
+  const banner = document.getElementById("goal-banner");
+  const config = GOAL_CONFIG[trainingGoal];
+  if (!config) { banner.classList.add("hidden"); return; }
+  document.getElementById("goal-banner-text").textContent = `Training for ${config.label}`;
+  banner.classList.remove("hidden");
 }
 
 // Routing
@@ -97,30 +145,39 @@ function getLocation() {
 
 // Ranking / preference engine
 function buildProfile() {
-  if (!liked.length) return null;
+  // Liked routes count double — they represent explicit preference signals.
+  // Past Strava activities count once — they seed the profile to avoid cold start.
+  const entries = [
+    ...liked.map(r => ({ ...r, _w: 2 })),
+    ...pastActivities.map(r => ({ ...r, _w: 1 })),
+  ];
+  if (!entries.length) return null;
 
-  const avg = key => liked.reduce((s, r) => s + (r[key] || 0), 0) / liked.length;
-  const avgDist = avg("distance");
-  const avgElev = avg("total_elevation_gain");
+  const totalW = entries.reduce((s, e) => s + e._w, 0);
+  const wavg = key => entries.reduce((s, e) => s + (e[key] || 0) * e._w, 0) / totalW;
 
-  const stdDev = key => {
-    const mean = avg(key);
-    const variance = liked.reduce((s, r) => s + Math.pow((r[key] || 0) - mean, 2), 0) / liked.length;
-    return Math.sqrt(variance);
+  const avgDist = wavg("distance");
+  const avgElev = wavg("total_elevation_gain");
+
+  // Weighted variance → std dev, with a floor so a thin profile still has a usable band
+  const wvar = key => {
+    const mean = wavg(key);
+    return entries.reduce((s, e) => s + e._w * Math.pow((e[key] || 0) - mean, 2), 0) / totalW;
   };
-  // floor stddev so a single-route profile still gives a reasonable acceptance band
-  const distStdDev = stdDev("distance") || avgDist * 0.3;
-  const elevStdDev = stdDev("total_elevation_gain") || Math.max(avgElev * 0.3, 20);
+  const distStdDev = Math.sqrt(wvar("distance")) || avgDist * 0.3;
+  const elevStdDev = Math.sqrt(wvar("total_elevation_gain")) || Math.max(avgElev * 0.3, 20);
 
-  // geographic centroid of liked routes (where the user likes to run)
-  const locRoutes = liked.filter(r => r.start_latlng?.length === 2);
-  const avgLat = locRoutes.length
-    ? locRoutes.reduce((s, r) => s + r.start_latlng[0], 0) / locRoutes.length
+  // Geographic centroid weighted by entry weight
+  const locEntries = entries.filter(e => e.start_latlng?.length === 2);
+  const locTotalW = locEntries.reduce((s, e) => s + e._w, 0);
+  const avgLat = locTotalW
+    ? locEntries.reduce((s, e) => s + e.start_latlng[0] * e._w, 0) / locTotalW
     : null;
-  const avgLng = locRoutes.length
-    ? locRoutes.reduce((s, r) => s + r.start_latlng[1], 0) / locRoutes.length
+  const avgLng = locTotalW
+    ? locEntries.reduce((s, e) => s + e.start_latlng[1] * e._w, 0) / locTotalW
     : null;
 
+  // count = liked routes only; used for confidence blending (past activities don't imply preference)
   return { avgDist, avgElev, distStdDev, elevStdDev, avgLat, avgLng, count: liked.length };
 }
 
@@ -145,6 +202,20 @@ function dailyPrefScore(r) {
   return total === 0 ? 1 : score / total;
 }
 
+function trainingGoalScore(route, profile) {
+  const config = GOAL_CONFIG[trainingGoal];
+  if (!config) return null;
+
+  // Use profile average as current fitness level; fall back to 30% of peak when no data yet
+  const currentBase = profile ? profile.avgDist : config.peakDist * 0.3;
+
+  // Progressive target: 10% above current level, capped at the goal's peak training distance
+  const targetDist = Math.min(currentBase * 1.1, config.peakDist);
+  const tolerance = Math.max(targetDist * 0.25, 800); // minimum 800 m window
+
+  return Math.exp(-0.5 * Math.pow((route.distance - targetDist) / tolerance, 2));
+}
+
 function popularityScore(r) {
   // log-scale blend: unique athletes is the strongest signal;
   // total efforts and Strava stars add secondary weight
@@ -160,8 +231,13 @@ function scoreRoute(r, profile) {
   const pop = popularityScore(r);
   const daily = dailyPrefScore(r);
   const hasDailyPref = dailyPrefs.distance !== "any" || dailyPrefs.terrain !== "any";
+  const goalScore = trainingGoalScore(r, profile);
+  const hasGoal = goalScore !== null;
 
   if (!profile) {
+    // Absolute cold start: no liked routes and no past activities
+    if (hasGoal && hasDailyPref) return daily * 0.30 + goalScore * 0.45 + pop * 0.25;
+    if (hasGoal) return goalScore * 0.60 + pop * 0.40;
     return hasDailyPref ? daily * 0.65 + pop * 0.35 : pop;
   }
 
@@ -181,14 +257,18 @@ function scoreRoute(r, profile) {
     locationScore = Math.exp(-distKm / 8);
   }
 
-  const preferenceScore = distScore * 0.45 + elevScore * 0.35 + locationScore * 0.20;
+  // When a training goal is active, it replaces most of the raw distance component
+  // so the recommender nudges the user toward progressive overload rather than their comfort zone
+  const preferenceScore = hasGoal
+    ? goalScore * 0.40 + elevScore * 0.30 + locationScore * 0.15 + distScore * 0.15
+    : distScore * 0.45 + elevScore * 0.35 + locationScore * 0.20;
 
-  // cold-start blend: popularity dominates until 5+ likes build a real profile
-  const confidence = Math.min(profile.count / 5, 1);
+  // Confidence: liked routes count fully; past activities add partial weight since
+  // they reveal fitness level but not explicit route preferences
+  const confidence = Math.min((liked.length + pastActivities.length * 0.4) / 5, 1);
   const profileBlend = confidence * preferenceScore + (1 - confidence) * pop;
 
-  // daily prefs override at 60% when the user made a specific choice
-  return hasDailyPref ? daily * 0.6 + profileBlend * 0.4 : profileBlend;
+  return hasDailyPref ? daily * 0.55 + profileBlend * 0.45 : profileBlend;
 }
 
 function rankRoutes(list) {

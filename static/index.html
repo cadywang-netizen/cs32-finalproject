@@ -72,6 +72,17 @@
           </div>
         </div>
 
+        <div class="pref-group">
+          <div class="pref-label">Training Goal</div>
+          <div class="pref-chips five-col" id="chips-goal">
+            <button class="pref-chip" data-goal="none" onclick="selectGoal('none')">None<span>no goal</span></button>
+            <button class="pref-chip" data-goal="5k" onclick="selectGoal('5k')">5K<span>5 km</span></button>
+            <button class="pref-chip" data-goal="10k" onclick="selectGoal('10k')">10K<span>10 km</span></button>
+            <button class="pref-chip" data-goal="half-marathon" onclick="selectGoal('half-marathon')">Half<span>21.1 km</span></button>
+            <button class="pref-chip" data-goal="marathon" onclick="selectGoal('marathon')">Full<span>42.2 km</span></button>
+          </div>
+        </div>
+
         <button class="find-routes-btn" onclick="startWithPrefs()">Find my routes →</button>
       </div>
     </div>
@@ -83,6 +94,10 @@
 
     <!-- SWIPE TAB -->
     <main id="swipe-tab" class="swipe-area">
+      <div id="goal-banner" class="goal-banner hidden">
+        <span>🎯</span>
+        <span id="goal-banner-text"></span>
+      </div>
       <div id="state-loading" class="state-msg">
         <div class="spinner"></div>
         <p>Finding routes near you…</p>
